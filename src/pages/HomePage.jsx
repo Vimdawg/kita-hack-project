@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom'
-import { ScanLine, Map, FileText, Users, CloudSun, Leaf, ArrowRight } from 'lucide-react'
+import { ScanLine, Map, FileText, Users, CloudSun, Leaf, ArrowRight, Bot } from 'lucide-react'
 import './HomePage.css'
 
 const features = [
@@ -29,6 +29,15 @@ const features = [
     description: 'Navigate B40 grants & auto-fill forms',
     color: '#E9C46A',
     bgGlow: 'rgba(233, 196, 106, 0.12)',
+  },
+  {
+    id: 'ai',
+    path: '/ai',
+    icon: Bot,
+    title: 'FarmGPT AI',
+    description: 'Ask Gemini AI for expert farming advice',
+    color: '#A855F7',
+    bgGlow: 'rgba(168, 85, 247, 0.12)',
   },
   {
     id: 'community',
