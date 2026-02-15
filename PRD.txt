@@ -42,6 +42,14 @@ richer geospatial data visualization.
 •⁠  ⁠Feature: Anonymized "Success Stories" based on similar 
   soil types and regional micro-climates.
 
+3.5 Gemini AI Integration (The Intelligence Layer)
+- Task: Transform raw data into conversational, expert advice.
+- Multimodal: Parse images and text documents (Subsidies/Manuals).
+- Regional Support: Support for Malay dialects (Kedah, Kelantan, etc.)
+  via Gemini’s native multilingual capabilities.
+- Weather Synthesis: Use Gemini to correlate weather APIs with 
+  pesticide application windows for "Precision Advice."
+  
 4.⁠ ⁠TECHNICAL STACK
 •⁠  ⁠Frontend: React.js + Tailwind CSS.
 •⁠  ⁠PWA Layer: Workbox (Service Workers for offline caching).
