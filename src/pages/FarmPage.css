@@ -1,0 +1,492 @@
+/* ========================= */
+/* Farm Page Layout           */
+/* ========================= */
+
+.farm-page {
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+  overflow: hidden;
+}
+
+/* ========================= */
+/* Map Container              */
+/* ========================= */
+
+.map-container {
+  flex: 1;
+  position: relative;
+  min-height: 0;
+}
+
+.map-container .leaflet-container {
+  background: var(--color-surface-dark) !important;
+}
+
+/* Override Leaflet popup styles */
+.farm-popup .leaflet-popup-content-wrapper {
+  background: var(--color-surface-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  color: var(--color-text-primary);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+}
+
+.farm-popup .leaflet-popup-tip {
+  background: var(--color-surface-elevated);
+  border-right: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.farm-popup .leaflet-popup-close-button {
+  color: var(--color-text-muted) !important;
+}
+
+.popup-content h4 {
+  font-size: 0.9rem;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.popup-content p {
+  font-size: 0.78rem;
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+.popup-soil {
+  margin-top: 4px !important;
+  color: var(--color-text-muted) !important;
+  font-size: 0.72rem !important;
+}
+
+/* Map Overlay Controls */
+.map-overlay-controls {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.map-control-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: rgba(15, 26, 15, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.map-control-btn:hover,
+.map-control-btn.active {
+  color: var(--color-primary-light);
+  border-color: var(--color-border-active);
+}
+
+.map-control-btn.active {
+  background: rgba(45, 106, 79, 0.2);
+}
+
+/* ========================= */
+/* Bottom Panel               */
+/* ========================= */
+
+.farm-panel {
+  height: 46%;
+  min-height: 280px;
+  max-height: 400px;
+  background: var(--color-surface-dark);
+  border-top: 1px solid var(--color-border);
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 72px;
+}
+
+/* Tab Bar */
+.panel-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--color-border);
+  padding: 0 8px;
+  flex-shrink: 0;
+}
+
+.panel-tab {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 12px 8px;
+  border: none;
+  background: none;
+  color: var(--color-text-muted);
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.panel-tab.active {
+  color: var(--color-primary-light);
+}
+
+.panel-tab.active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 20%;
+  right: 20%;
+  height: 2px;
+  background: var(--color-primary-light);
+  border-radius: 1px;
+}
+
+.alert-count {
+  background: var(--color-alert);
+  color: white;
+  font-size: 0.6rem;
+  font-weight: 700;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Panel Content */
+.panel-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px 12px 0;
+}
+
+/* ========================= */
+/* Farms Tab                  */
+/* ========================= */
+
+.farms-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.farm-item {
+  padding: 14px;
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+  transition: all 0.2s ease;
+}
+
+.farm-item.selected {
+  border-color: var(--color-primary-light);
+  box-shadow: 0 0 16px var(--color-primary-glow);
+}
+
+.farm-item-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.farm-color-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.farm-item-info {
+  flex: 1;
+}
+
+.farm-item-info h4 {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.farm-item-info p {
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+  margin-top: 1px;
+}
+
+.farm-nav-icon {
+  color: var(--color-text-muted);
+  transition: transform 0.2s ease;
+}
+
+.farm-item:hover .farm-nav-icon {
+  color: var(--color-primary-light);
+  transform: translateX(2px);
+}
+
+.farm-item-details {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 4px;
+}
+
+.farm-detail {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.7rem;
+  color: var(--color-text-muted);
+}
+
+/* Add Farm Button */
+.add-farm-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px;
+  border-style: dashed;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  width: 100%;
+}
+
+.add-farm-btn:hover {
+  color: var(--color-primary-light);
+  border-color: var(--color-primary-light);
+}
+
+/* ========================= */
+/* Weather Tab                */
+/* ========================= */
+
+.weather-current {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px;
+  margin-bottom: 14px;
+}
+
+.weather-current-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.weather-current-icon {
+  color: var(--color-accent);
+}
+
+.weather-current-temp {
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+.weather-current-desc {
+  font-size: 0.78rem;
+  color: var(--color-text-secondary);
+}
+
+.weather-current-stats {
+  display: flex;
+  gap: 14px;
+}
+
+.weather-mini-stat {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.78rem;
+  color: var(--color-text-secondary);
+}
+
+.weather-mini-stat svg {
+  color: var(--color-info);
+}
+
+/* Forecast */
+.forecast-title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 10px;
+}
+
+.forecast-cards {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+  margin-bottom: 14px;
+}
+
+.forecast-card {
+  flex: 0 0 72px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 8px;
+  text-align: center;
+}
+
+.forecast-card.forecast-alert-warning {
+  border-color: rgba(255, 209, 102, 0.3);
+}
+
+.forecast-card.forecast-alert-danger {
+  border-color: rgba(230, 57, 70, 0.3);
+}
+
+.forecast-day {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+}
+
+.forecast-icon {
+  color: var(--color-accent);
+}
+
+.forecast-alert-warning .forecast-icon {
+  color: var(--color-warning);
+}
+
+.forecast-alert-danger .forecast-icon {
+  color: var(--color-alert);
+}
+
+.forecast-temp {
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.forecast-rain {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 0.65rem;
+  color: var(--color-info);
+}
+
+/* Weather Advisory */
+.weather-advisory {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px;
+  margin-bottom: 12px;
+  border-left: 3px solid var(--color-warning);
+}
+
+.advisory-icon {
+  color: var(--color-warning);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.weather-advisory h5 {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin-bottom: 4px;
+}
+
+.weather-advisory p {
+  font-size: 0.78rem;
+  color: var(--color-text-secondary);
+  line-height: 1.4;
+}
+
+/* ========================= */
+/* Alerts Tab                 */
+/* ========================= */
+
+.alerts-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.alert-item {
+  display: flex;
+  gap: 12px;
+  padding: 14px;
+}
+
+.alert-item.alert-danger {
+  border-left: 3px solid var(--color-alert);
+}
+
+.alert-item.alert-warning {
+  border-left: 3px solid var(--color-warning);
+}
+
+.alert-item.alert-info {
+  border-left: 3px solid var(--color-success);
+}
+
+.alert-item-icon {
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.alert-danger .alert-item-icon {
+  background: rgba(230, 57, 70, 0.12);
+  color: var(--color-alert);
+}
+
+.alert-warning .alert-item-icon {
+  background: rgba(255, 209, 102, 0.12);
+  color: var(--color-warning);
+}
+
+.alert-info .alert-item-icon {
+  background: rgba(6, 214, 160, 0.12);
+  color: var(--color-success);
+}
+
+.alert-item-content h4 {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin-bottom: 4px;
+}
+
+.alert-item-content p {
+  font-size: 0.78rem;
+  color: var(--color-text-secondary);
+  line-height: 1.4;
+}
+
+.alert-time {
+  display: block;
+  font-size: 0.68rem;
+  color: var(--color-text-muted);
+  margin-top: 6px;
+  font-weight: 500;
+}

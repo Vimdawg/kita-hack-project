@@ -1,0 +1,62 @@
+============================================================
+PRODUCT REQUIREMENTS DOCUMENT (PRD): FARMGPT WEB (PWA)
+============================================================
+Project Name: FarmGPT Web Implementation
+Version: 2.0 (Migration from WhatsApp Design)
+Target Market: Malaysia (B40 Smallholders)
+Date: February 15, 2026
+
+1.⁠ ⁠EXECUTIVE SUMMARY
+FarmGPT Web is a mobile-first Progressive Web App (PWA) designed 
+to provide Malaysian smallholders with an interactive dashboard 
+for crop health, precision weather analytics, and subsidy management. 
+By moving to a PWA, we gain offline capabilities (Edge AI) and 
+richer geospatial data visualization.
+
+2.⁠ ⁠USER PERSONAS
+•⁠  ⁠Smallholder (Oil Palm/Paddy): Needs fast, offline disease 
+  diagnosis and clear "Action/No-Action" weather alerts.
+•⁠  ⁠Extension Officer (MARDI): Needs a centralized "Disease Atlas" 
+  to track regional outbreaks.
+
+3.⁠ ⁠FUNCTIONAL REQUIREMENTS
+
+3.1 Offline-First Image Recognition (Edge AI)
+•⁠  ⁠Requirement: Must perform diagnosis without active 4G/5G.
+•⁠  ⁠Technology: TensorFlow.js model cached locally.
+•⁠  ⁠Crops: Oil Palm (Basal Stem Rot), Paddy (Rice Blast), 
+  Rubber (Leaf diseases), Cocoa (Frosty Pod Rot).
+
+3.2 "My Farm" Geospatial Dashboard
+•⁠  ⁠Requirement: Map-based interface for farm boundaries.
+•⁠  ⁠Visualization: Overlay local pest pressure and weather 
+  forecasts directly onto the user's plot location.
+
+3.3 Government Subsidy Navigator
+•⁠  ⁠Requirement: Simplify the B40 grant application process.
+•⁠  ⁠Features: OCR scanning for NRIC/Land Titles, auto-filling 
+  MDEC/MARDI digital forms, and deadline reminders.
+
+3.4 Community Knowledge Loop
+•⁠  ⁠Requirement: Peer-to-peer social learning.
+•⁠  ⁠Feature: Anonymized "Success Stories" based on similar 
+  soil types and regional micro-climates.
+
+4.⁠ ⁠TECHNICAL STACK
+•⁠  ⁠Frontend: React.js + Tailwind CSS.
+•⁠  ⁠PWA Layer: Workbox (Service Workers for offline caching).
+•⁠  ⁠Machine Learning: TensorFlow.js (In-browser inference).
+•⁠  ⁠Backend: Google Cloud Functions + Firebase.
+•⁠  ⁠Data Integration: MetMalaysia API, MARDI Database, MDEC Portal.
+
+5.⁠ ⁠KEY PERFORMANCE INDICATORS (KPIs)
+•⁠  ⁠Yield Increase: Targeted 15% average increase.
+•⁠  ⁠Cost Reduction: 8-12% reduction in fertilizer waste.
+•⁠  ⁠Offline Usage: >50% of diagnoses performed in offline mode.
+•⁠  ⁠User Retention: DAU/MAU ratio of >40%.
+
+6.⁠ ⁠RISK MITIGATION
+•⁠  ⁠Device Compatibility: Support for Android Go and older browsers.
+•⁠  ⁠Model Size: Keep quantized ML models under 20MB for fast 
+  initial download.
+============================================================

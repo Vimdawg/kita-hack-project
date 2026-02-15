@@ -1,0 +1,266 @@
+/* ========================= */
+/* Crop Selector              */
+/* ========================= */
+
+.crop-selector-wrapper {
+  position: relative;
+  margin-bottom: 16px;
+}
+
+.crop-selector {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  width: 100%;
+  cursor: pointer;
+  text-align: left;
+}
+
+.crop-emoji {
+  font-size: 1.3rem;
+}
+
+.crop-name {
+  flex: 1;
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--color-text-primary);
+}
+
+.crop-chevron {
+  color: var(--color-text-muted);
+  transition: transform 0.2s ease;
+}
+
+.crop-chevron.open {
+  transform: rotate(180deg);
+}
+
+.crop-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  z-index: 100;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.crop-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: none;
+  background: none;
+  color: var(--color-text-primary);
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.crop-option:hover,
+.crop-option.active {
+  background: var(--color-surface-glass);
+}
+
+.crop-option.active {
+  color: var(--color-primary-light);
+  font-weight: 600;
+}
+
+/* ========================= */
+/* Upload Area                */
+/* ========================= */
+
+.upload-zone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 40px 24px;
+  text-align: center;
+  border-style: dashed;
+}
+
+.upload-icon-wrapper {
+  width: 72px;
+  height: 72px;
+  border-radius: 20px;
+  background: var(--color-surface-glass);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-primary-light);
+  margin-bottom: 4px;
+}
+
+.upload-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.upload-desc {
+  font-size: 0.82rem;
+  color: var(--color-text-secondary);
+  margin-bottom: 8px;
+}
+
+.upload-actions {
+  display: flex;
+  gap: 12px;
+}
+
+/* ========================= */
+/* Preview Area               */
+/* ========================= */
+
+.preview-image-wrapper {
+  position: relative;
+  overflow: hidden;
+  padding: 0;
+  margin-bottom: 16px;
+}
+
+.preview-image {
+  width: 100%;
+  max-height: 300px;
+  object-fit: cover;
+  border-radius: 16px;
+  display: block;
+}
+
+.preview-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(8px);
+  border: none;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.preview-close:hover {
+  background: rgba(230, 57, 70, 0.7);
+}
+
+/* ========================= */
+/* Analyze Actions            */
+/* ========================= */
+
+.analyze-actions {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.analyze-btn {
+  flex: 1;
+}
+
+.analyze-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+.spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* ========================= */
+/* Analyzing Indicator        */
+/* ========================= */
+
+.analyzing-indicator {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.analyzing-indicator p {
+  color: var(--color-text-secondary);
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.analyzing-bar {
+  width: 100%;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--color-surface-elevated);
+  overflow: hidden;
+}
+
+.analyzing-progress {
+  height: 100%;
+  width: 40%;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--color-primary), var(--color-primary-light));
+  animation: analyzing-slide 1.5s ease-in-out infinite;
+}
+
+@keyframes analyzing-slide {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(350%); }
+}
+
+/* ========================= */
+/* Diagnosis Results          */
+/* ========================= */
+
+.diagnosis-results {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.scan-again-btn {
+  width: 100%;
+  margin-top: 4px;
+}
+
+/* ========================= */
+/* Offline Badge              */
+/* ========================= */
+
+.offline-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px;
+  margin-top: 24px;
+  font-size: 0.78rem;
+  color: var(--color-text-muted);
+  font-weight: 500;
+}
+
+.offline-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-success);
+  box-shadow: 0 0 4px var(--color-success);
+}
