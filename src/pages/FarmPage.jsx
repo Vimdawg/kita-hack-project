@@ -1,11 +1,14 @@
-import { useState, useCallback } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { MapContainer, TileLayer, Polygon, Circle, Popup, useMap } from 'react-leaflet'
 import {
-  MapPin, Plus, Trash2, CloudRain, CloudSun, Cloud, Droplets,
-  Wind, Thermometer, Bug, AlertTriangle, Eye, EyeOff, Layers, Navigation
+  MapPin, Plus, Trash2, CloudRain, CloudSun, Cloud, Sun, Droplets,
+  Wind, Thermometer, Bug, AlertTriangle, Eye, EyeOff, Layers, Navigation, Loader2
 } from 'lucide-react'
+import { fetchWeather } from '../utils/weather'
 import 'leaflet/dist/leaflet.css'
 import './FarmPage.css'
+
+const WEATHER_ICONS = { 'sun': Sun, 'cloud-sun': CloudSun, 'cloud': Cloud, 'cloud-rain': CloudRain }
 
 // ── Malaysian Farm Locations (Demo Data) ──────────────────
 const DEMO_FARMS = [
@@ -69,14 +72,7 @@ const PEST_ZONES = [
   },
 ]
 
-// ── Weather Forecast Data ────────────────────────────────
-const WEATHER_FORECAST = [
-  { day: 'Today', icon: CloudSun, temp: '31°C', rain: '40%', desc: 'Partly Cloudy', alert: null },
-  { day: 'Tue', icon: CloudRain, temp: '28°C', rain: '80%', desc: 'Heavy Rain', alert: 'warning' },
-  { day: 'Wed', icon: CloudRain, temp: '27°C', rain: '70%', desc: 'Thunderstorm', alert: 'danger' },
-  { day: 'Thu', icon: Cloud, temp: '30°C', rain: '30%', desc: 'Cloudy', alert: null },
-  { day: 'Fri', icon: CloudSun, temp: '32°C', rain: '15%', desc: 'Mostly Sunny', alert: null },
-]
+// Weather forecast is now fetched live from Open-Meteo
 
 // ── Map Recenter Component ────────────────────────────────
 function FlyToFarm({ center }) {
@@ -92,13 +88,23 @@ export default function FarmPage() {
   const [selectedFarm, setSelectedFarm] = useState(null)
   const [flyTarget, setFlyTarget] = useState(null)
   const [activeTab, setActiveTab] = useState('farms') // 'farms' | 'weather' | 'alerts'
+  const [weather, setWeather] = useState(null)
+  const [weatherLoading, setWeatherLoading] = useState(true)
+
+  useEffect(() => {
+    // Fetch weather for default farm area (KL)
+    fetchWeather(3.139, 101.687)
+      .then(setWeather)
+      .catch((err) => console.warn('Weather fetch failed:', err))
+      .finally(() => setWeatherLoading(false))
+  }, [])
 
   const handleFarmSelect = useCallback((farm) => {
     setSelectedFarm(farm)
     setFlyTarget(farm.center)
   }, [])
 
-  const alertCount = WEATHER_FORECAST.filter((w) => w.alert).length
+  const alertCount = weather ? weather.alerts.length + 1 : 1 // +1 for pest alert
 
   return (
     <div className="farm-page">
@@ -250,71 +256,95 @@ export default function FarmPage() {
           {/* ── Weather Tab ──────────────── */}
           {activeTab === 'weather' && (
             <div className="weather-forecast-list">
-              {/* Current Conditions */}
-              <div className="weather-current glass-card">
-                <div className="weather-current-left">
-                  <Thermometer size={20} className="weather-current-icon" />
-                  <div>
-                    <p className="weather-current-temp">31°C</p>
-                    <p className="weather-current-desc">Partly Cloudy</p>
-                  </div>
+              {weatherLoading ? (
+                <div className="weather-loading-panel">
+                  <Loader2 size={24} className="spin" />
+                  <span>Loading weather…</span>
                 </div>
-                <div className="weather-current-stats">
-                  <div className="weather-mini-stat">
-                    <Droplets size={14} />
-                    <span>78%</span>
-                  </div>
-                  <div className="weather-mini-stat">
-                    <Wind size={14} />
-                    <span>12 km/h</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* 5-Day Forecast */}
-              <h4 className="forecast-title">5-Day Forecast</h4>
-              <div className="forecast-cards">
-                {WEATHER_FORECAST.map((day) => {
-                  const Icon = day.icon
-                  return (
-                    <div key={day.day} className={`forecast-card glass-card ${day.alert ? 'forecast-alert-' + day.alert : ''}`}>
-                      <span className="forecast-day">{day.day}</span>
-                      <Icon size={20} className="forecast-icon" />
-                      <span className="forecast-temp">{day.temp}</span>
-                      <div className="forecast-rain">
-                        <Droplets size={10} />
-                        <span>{day.rain}</span>
+              ) : weather ? (
+                <>
+                  {/* Current Conditions */}
+                  <div className="weather-current glass-card">
+                    <div className="weather-current-left">
+                      <Thermometer size={20} className="weather-current-icon" />
+                      <div>
+                        <p className="weather-current-temp">{weather.current.temperature}°C</p>
+                        <p className="weather-current-desc">{weather.current.description}</p>
                       </div>
                     </div>
-                  )
-                })}
-              </div>
+                    <div className="weather-current-stats">
+                      <div className="weather-mini-stat">
+                        <Droplets size={14} />
+                        <span>{weather.current.humidity}%</span>
+                      </div>
+                      <div className="weather-mini-stat">
+                        <Wind size={14} />
+                        <span>{weather.current.windSpeed} km/h</span>
+                      </div>
+                    </div>
+                  </div>
 
-              {/* Weather Advisory */}
-              <div className="weather-advisory glass-card">
-                <AlertTriangle size={16} className="advisory-icon" />
-                <div>
-                  <h5>Weather Advisory</h5>
-                  <p>Heavy rain expected Tue-Wed. Consider delaying fertilizer application and pausing tapping operations.</p>
+                  {/* 5-Day Forecast */}
+                  <h4 className="forecast-title">5-Day Forecast</h4>
+                  <div className="forecast-cards">
+                    {weather.forecast.map((day) => {
+                      const Icon = WEATHER_ICONS[day.icon] || CloudSun
+                      const rainPct = parseInt(day.rain)
+                      const alertClass = rainPct >= 70 ? 'forecast-alert-danger' : rainPct >= 50 ? 'forecast-alert-warning' : ''
+                      return (
+                        <div key={day.day} className={`forecast-card glass-card ${alertClass}`}>
+                          <span className="forecast-day">{day.day}</span>
+                          <Icon size={20} className="forecast-icon" />
+                          <span className="forecast-temp">{day.temp}</span>
+                          <div className="forecast-rain">
+                            <Droplets size={10} />
+                            <span>{day.rain}</span>
+                          </div>
+                        </div>
+                      )
+                    })}
+                  </div>
+
+                  {/* Weather Advisory */}
+                  <div className="weather-advisory glass-card">
+                    <AlertTriangle size={16} className="advisory-icon" />
+                    <div>
+                      <h5>Weather Advisory</h5>
+                      <p>{weather.advisory}</p>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <div className="weather-loading-panel">
+                  <CloudSun size={24} />
+                  <span>Weather data unavailable</span>
                 </div>
-              </div>
+              )}
             </div>
           )}
 
           {/* ── Alerts Tab ───────────────── */}
           {activeTab === 'alerts' && (
             <div className="alerts-list">
-              <div className="alert-item glass-card alert-danger">
-                <div className="alert-item-icon">
-                  <AlertTriangle size={18} />
-                </div>
-                <div className="alert-item-content">
-                  <h4>Thunderstorm Warning</h4>
-                  <p>Heavy rainfall (60-80mm) expected Wednesday. Secure loose equipment and check drainage channels.</p>
-                  <span className="alert-time">Wed, Feb 17 • MetMalaysia</span>
-                </div>
-              </div>
+              {/* Dynamic weather alerts */}
+              {weather?.alerts.map((alert, idx) => {
+                const severity = alert.type === 'storm' ? 'danger' : alert.type === 'rain' ? 'warning' : 'info'
+                const AlertIcon = alert.type === 'storm' ? AlertTriangle : alert.type === 'rain' ? CloudRain : CloudSun
+                return (
+                  <div key={`weather-${idx}`} className={`alert-item glass-card alert-${severity}`}>
+                    <div className="alert-item-icon">
+                      <AlertIcon size={18} />
+                    </div>
+                    <div className="alert-item-content">
+                      <h4>{alert.title}</h4>
+                      <p>{alert.message}</p>
+                      <span className="alert-time">Open-Meteo • FarmGPT</span>
+                    </div>
+                  </div>
+                )
+              })}
 
+              {/* Persistent pest alert */}
               <div className="alert-item glass-card alert-warning">
                 <div className="alert-item-icon">
                   <Bug size={18} />
@@ -326,16 +356,18 @@ export default function FarmPage() {
                 </div>
               </div>
 
-              <div className="alert-item glass-card alert-info">
-                <div className="alert-item-icon">
-                  <CloudRain size={18} />
+              {(!weather || weather.alerts.length === 0) && (
+                <div className="alert-item glass-card alert-info">
+                  <div className="alert-item-icon">
+                    <CloudSun size={18} />
+                  </div>
+                  <div className="alert-item-content">
+                    <h4>No Weather Alerts</h4>
+                    <p>Conditions look clear. Good time for field operations.</p>
+                    <span className="alert-time">FarmGPT</span>
+                  </div>
                 </div>
-                <div className="alert-item-content">
-                  <h4>No-Action Weather Window</h4>
-                  <p>Thursday-Friday: Clear skies. Optimal for spraying or fertilizer application.</p>
-                  <span className="alert-time">Thu-Fri • FarmGPT</span>
-                </div>
-              </div>
+              )}
             </div>
           )}
         </div>

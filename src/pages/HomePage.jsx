@@ -1,5 +1,7 @@
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ScanLine, Map, FileText, Users, CloudSun, Leaf, ArrowRight, Bot } from 'lucide-react'
+import { ScanLine, Map, FileText, Users, CloudSun, CloudRain, Cloud, Sun, Leaf, ArrowRight, Bot, Loader2 } from 'lucide-react'
+import { fetchWeather } from '../utils/weather'
 import './HomePage.css'
 
 const features = [
@@ -50,8 +52,21 @@ const features = [
   },
 ]
 
+const WEATHER_ICONS = { 'sun': Sun, 'cloud-sun': CloudSun, 'cloud': Cloud, 'cloud-rain': CloudRain }
+
 export default function HomePage() {
   const navigate = useNavigate()
+  const [weather, setWeather] = useState(null)
+  const [weatherLoading, setWeatherLoading] = useState(true)
+
+  useEffect(() => {
+    fetchWeather()
+      .then(setWeather)
+      .catch((err) => console.warn('Weather fetch failed:', err))
+      .finally(() => setWeatherLoading(false))
+  }, [])
+
+  const WeatherIcon = weather ? (WEATHER_ICONS[weather.current.icon] || CloudSun) : CloudSun
 
   return (
     <div className="page-container">
@@ -71,23 +86,37 @@ export default function HomePage() {
 
       {/* Weather Quick Card */}
       <section className="weather-card glass-card animate-fade-in-delay-1" id="weather-widget">
-        <div className="weather-left">
-          <CloudSun size={28} className="weather-icon" />
-          <div>
-            <p className="weather-temp">31°C</p>
-            <p className="weather-desc">Partly Cloudy</p>
+        {weatherLoading ? (
+          <div className="weather-loading">
+            <Loader2 size={22} className="spin" />
+            <span>Loading weather…</span>
           </div>
-        </div>
-        <div className="weather-right">
-          <div className="weather-stat">
-            <span className="weather-stat-label">Humidity</span>
-            <span className="weather-stat-value">78%</span>
+        ) : weather ? (
+          <>
+            <div className="weather-left">
+              <WeatherIcon size={28} className="weather-icon" />
+              <div>
+                <p className="weather-temp">{weather.current.temperature}°C</p>
+                <p className="weather-desc">{weather.current.description}</p>
+              </div>
+            </div>
+            <div className="weather-right">
+              <div className="weather-stat">
+                <span className="weather-stat-label">Humidity</span>
+                <span className="weather-stat-value">{weather.current.humidity}%</span>
+              </div>
+              <div className="weather-stat">
+                <span className="weather-stat-label">Rain</span>
+                <span className="weather-stat-value">{weather.forecast[0]?.rain ?? '—'}</span>
+              </div>
+            </div>
+          </>
+        ) : (
+          <div className="weather-loading">
+            <CloudSun size={22} />
+            <span>Weather unavailable</span>
           </div>
-          <div className="weather-stat">
-            <span className="weather-stat-label">Rain</span>
-            <span className="weather-stat-value">40%</span>
-          </div>
-        </div>
+        )}
       </section>
 
       {/* Quick Scan CTA */}

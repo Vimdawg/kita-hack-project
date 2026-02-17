@@ -230,3 +230,22 @@
   transform: translateX(4px);
   color: var(--feature-color);
 }
+
+/* Weather loading state */
+.weather-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 8px 0;
+  color: var(--color-text-secondary);
+  font-size: 0.85rem;
+}
+
+.spin {
+  animation: spin 1s linear infinite;
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
