@@ -6,6 +6,7 @@ import { diagnoseCropWithAI, hasApiKey } from '../utils/gemini'
 import './ScanPage.css'
 
 const CROP_OPTIONS = [
+  { value: 'auto', label: 'Auto-detect', emoji: '🔍' },
   { value: 'oil-palm', label: 'Oil Palm', emoji: '🌴' },
   { value: 'paddy', label: 'Paddy Rice', emoji: '🌾' },
   { value: 'rubber', label: 'Rubber', emoji: '🌿' },
@@ -15,7 +16,7 @@ const CROP_OPTIONS = [
 export default function ScanPage() {
   const [image, setImage] = useState(null)
   const [imagePreview, setImagePreview] = useState(null)
-  const [selectedCrop, setSelectedCrop] = useState('oil-palm')
+  const [selectedCrop, setSelectedCrop] = useState('auto')
   const [isAnalyzing, setIsAnalyzing] = useState(false)
   const [diagnosis, setDiagnosis] = useState(null)
   const [showCropSelect, setShowCropSelect] = useState(false)
@@ -40,11 +41,13 @@ export default function ScanPage() {
     setIsAnalyzing(true)
     setDiagnosis(null)
 
+    const cropHint = selectedCrop === 'auto' ? null : selectedCrop
+
     // Try Gemini Vision first if API key is available
     if (hasApiKey()) {
       setAnalysisMode('ai')
       try {
-        const result = await diagnoseCropWithAI(image, selectedCrop)
+        const result = await diagnoseCropWithAI(image, cropHint)
         setDiagnosis(result)
         setIsAnalyzing(false)
         return
@@ -56,8 +59,10 @@ export default function ScanPage() {
     // Fallback to offline mock diagnosis
     setAnalysisMode('offline')
     try {
+      // Auto-detect not supported offline — use oil-palm as default
+      const fallbackCrop = cropHint || 'oil-palm'
       await new Promise((resolve) => setTimeout(resolve, 1500 + Math.random() * 1000))
-      const result = runDiagnosis(selectedCrop, image)
+      const result = runDiagnosis(fallbackCrop, image)
       setDiagnosis(result)
     } catch (err) {
       console.error('Diagnosis failed:', err)
@@ -82,39 +87,9 @@ export default function ScanPage() {
         <p>AI-powered disease diagnosis — works offline</p>
       </header>
 
-      {/* Crop Selector */}
-      <div className="crop-selector-wrapper animate-fade-in-delay-1">
-        <button
-          className="crop-selector glass-card"
-          id="crop-selector"
-          onClick={() => setShowCropSelect(!showCropSelect)}
-        >
-          <span className="crop-emoji">{currentCrop?.emoji}</span>
-          <span className="crop-name">{currentCrop?.label}</span>
-          <ChevronDown size={16} className={`crop-chevron ${showCropSelect ? 'open' : ''}`} />
-        </button>
-        {showCropSelect && (
-          <div className="crop-dropdown glass-card">
-            {CROP_OPTIONS.map((crop) => (
-              <button
-                key={crop.value}
-                className={`crop-option ${crop.value === selectedCrop ? 'active' : ''}`}
-                onClick={() => {
-                  setSelectedCrop(crop.value)
-                  setShowCropSelect(false)
-                }}
-              >
-                <span>{crop.emoji}</span>
-                <span>{crop.label}</span>
-              </button>
-            ))}
-          </div>
-        )}
-      </div>
-
       {/* Image Area */}
       {!imagePreview ? (
-        <div className="upload-area animate-fade-in-delay-2">
+        <div className="upload-area animate-fade-in-delay-1">
           <div className="upload-zone glass-card" id="upload-zone">
             <div className="upload-icon-wrapper">
               <Camera size={40} />
@@ -221,6 +196,36 @@ export default function ScanPage() {
           )}
         </div>
       )}
+
+      {/* Crop Selector */}
+      <div className="crop-selector-wrapper animate-fade-in-delay-2">
+        <button
+          className="crop-selector glass-card"
+          id="crop-selector"
+          onClick={() => setShowCropSelect(!showCropSelect)}
+        >
+          <span className="crop-emoji">{currentCrop?.emoji}</span>
+          <span className="crop-name">{currentCrop?.label}</span>
+          <ChevronDown size={16} className={`crop-chevron ${showCropSelect ? 'open' : ''}`} />
+        </button>
+        {showCropSelect && (
+          <div className="crop-dropdown glass-card">
+            {CROP_OPTIONS.map((crop) => (
+              <button
+                key={crop.value}
+                className={`crop-option ${crop.value === selectedCrop ? 'active' : ''}`}
+                onClick={() => {
+                  setSelectedCrop(crop.value)
+                  setShowCropSelect(false)
+                }}
+              >
+                <span>{crop.emoji}</span>
+                <span>{crop.label}</span>
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
 
       {/* Mode Indicator */}
       <div className="offline-badge animate-fade-in-delay-3">

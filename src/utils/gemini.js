@@ -215,17 +215,22 @@ export async function diagnoseCropWithAI(imageFile, cropType) {
     'rubber': 'Rubber',
     'cocoa': 'Cocoa',
   }
-  const cropName = cropLabels[cropType] || cropType
+  const cropName = cropType ? (cropLabels[cropType] || cropType) : null
+
+  const cropContext = cropName
+    ? `Analyze this ${cropName} image`
+    : `Identify the crop in this image and analyze it for diseases`
 
   const prompt = `You are an expert plant pathologist specializing in Malaysian crops.
 
-Analyze this ${cropName} image and respond ONLY with a valid JSON object (no markdown, no code fences, no extra text). Use this exact schema:
+${cropContext} and respond ONLY with a valid JSON object (no markdown, no code fences, no extra text). Use this exact schema:
 
 {
   "disease": "Name of disease or 'Healthy'",
   "confidence": 0.85,
   "severity": "high | medium | low | none",
   "description": "Brief 1-2 sentence description of the condition",
+  "crop": "Detected crop name",
   "actions": ["Action 1", "Action 2", "Action 3"]
 }
 
@@ -233,6 +238,7 @@ Rules:
 - confidence must be a number between 0.0 and 1.0
 - severity must be one of: "high", "medium", "low", "none"
 - If the plant looks healthy, set severity to "none" and disease to "Healthy"
+- "crop" should be the crop species you identified in the image
 - actions should contain 3-5 practical steps using products available in Malaysia
 - Mention MARDI extension officers for severe cases
 - Keep the description concise`
