@@ -38,7 +38,6 @@ export default function GeminiPage() {
   const [imageFile, setImageFile] = useState(null)
   const [imagePreview, setImagePreview] = useState(null)
   const [error, setError] = useState(null)
-  const [initialPromptSent, setInitialPromptSent] = useState(false)
   const messagesEndRef = useRef(null)
   const inputRef = useRef(null)
   const fileInputRef = useRef(null)
@@ -58,13 +57,14 @@ export default function GeminiPage() {
   }, [])
 
   // Handle initial prompt from navigation (e.g. from DiagnosisCard)
+  const initialPromptHandled = useRef(false)
   useEffect(() => {
     const initialPrompt = location.state?.initialPrompt
-    if (initialPrompt && !initialPromptSent && hasApiKey()) {
-      setInitialPromptSent(true)
+    if (initialPrompt && !initialPromptHandled.current && hasApiKey()) {
+      initialPromptHandled.current = true
       handleSend(initialPrompt)
     }
-  }, [location.state, initialPromptSent])
+  }, [location.state])
 
   // Build chat history for API
   const getChatHistory = useCallback(() => {
