@@ -200,6 +200,85 @@ Keep the advice practical and concise.`
   return sendMessage([], prompt)
 }
 
+// ── Structured Crop Diagnosis (Vision) ─────────────────────
+/**
+ * Analyze a crop image with Gemini Vision and return a structured
+ * diagnosis object compatible with DiagnosisCard.
+ * @param {File} imageFile - The crop image to analyze
+ * @param {string} cropType - One of: 'oil-palm', 'paddy', 'rubber', 'cocoa'
+ * @returns {Promise<{disease, confidence, severity, description, actions[], cropType, source}>}
+ */
+export async function diagnoseCropWithAI(imageFile, cropType) {
+  const cropLabels = {
+    'oil-palm': 'Oil Palm',
+    'paddy': 'Paddy Rice',
+    'rubber': 'Rubber',
+    'cocoa': 'Cocoa',
+  }
+  const cropName = cropLabels[cropType] || cropType
+
+  const prompt = `You are an expert plant pathologist specializing in Malaysian crops.
+
+Analyze this ${cropName} image and respond ONLY with a valid JSON object (no markdown, no code fences, no extra text). Use this exact schema:
+
+{
+  "disease": "Name of disease or 'Healthy'",
+  "confidence": 0.85,
+  "severity": "high | medium | low | none",
+  "description": "Brief 1-2 sentence description of the condition",
+  "actions": ["Action 1", "Action 2", "Action 3"]
+}
+
+Rules:
+- confidence must be a number between 0.0 and 1.0
+- severity must be one of: "high", "medium", "low", "none"
+- If the plant looks healthy, set severity to "none" and disease to "Healthy"
+- actions should contain 3-5 practical steps using products available in Malaysia
+- Mention MARDI extension officers for severe cases
+- Keep the description concise`
+
+  const rawResponse = await analyzeImage(imageFile, prompt)
+
+  // Parse the JSON from the response
+  try {
+    // Try to extract JSON from the response (handle cases where model wraps in markdown)
+    let jsonStr = rawResponse
+    const jsonMatch = rawResponse.match(/\{[\s\S]*\}/)
+    if (jsonMatch) {
+      jsonStr = jsonMatch[0]
+    }
+
+    const parsed = JSON.parse(jsonStr)
+
+    return {
+      disease: parsed.disease || 'Unknown',
+      confidence: Math.min(1, Math.max(0, Number(parsed.confidence) || 0.7)),
+      severity: ['high', 'medium', 'low', 'none'].includes(parsed.severity) ? parsed.severity : 'medium',
+      description: parsed.description || 'Analysis complete.',
+      actions: Array.isArray(parsed.actions) ? parsed.actions : ['Consult a MARDI extension officer for further analysis.'],
+      cropType,
+      source: 'gemini',
+      timestamp: new Date().toISOString(),
+    }
+  } catch (parseErr) {
+    // If JSON parsing fails, return a generic result with the raw text as description
+    return {
+      disease: 'AI Analysis',
+      confidence: 0.75,
+      severity: 'medium',
+      description: rawResponse.slice(0, 300),
+      actions: [
+        'Review the AI analysis above',
+        'Take additional photos from different angles',
+        'Consult a MARDI extension officer for confirmation',
+      ],
+      cropType,
+      source: 'gemini',
+      timestamp: new Date().toISOString(),
+    }
+  }
+}
+
 // ── Quick Prompts (Pre-built queries for common scenarios) ─
 export const QUICK_PROMPTS = [
   {

@@ -236,13 +236,26 @@
   gap: 12px;
 }
 
+.ai-source-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  align-self: flex-start;
+  padding: 5px 12px;
+  border-radius: 20px;
+  background: rgba(168, 85, 247, 0.12);
+  color: #a855f7;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
 .scan-again-btn {
   width: 100%;
   margin-top: 4px;
 }
 
 /* ========================= */
-/* Offline Badge              */
+/* Mode Badge                 */
 /* ========================= */
 
 .offline-badge {
@@ -263,4 +276,8 @@
   border-radius: 50%;
   background: var(--color-success);
   box-shadow: 0 0 4px var(--color-success);
+}
+
+.ai-dot {
+  color: #a855f7;
 }

@@ -1,7 +1,8 @@
 import { useState, useRef, useCallback } from 'react'
-import { Camera, Upload, X, RotateCcw, Loader2, AlertTriangle, CheckCircle2, ChevronDown } from 'lucide-react'
+import { Camera, Upload, X, RotateCcw, Loader2, AlertTriangle, CheckCircle2, ChevronDown, Sparkles, WifiOff } from 'lucide-react'
 import DiagnosisCard from '../components/DiagnosisCard'
 import { runDiagnosis } from '../utils/diagnose'
+import { diagnoseCropWithAI, hasApiKey } from '../utils/gemini'
 import './ScanPage.css'
 
 const CROP_OPTIONS = [
@@ -18,6 +19,7 @@ export default function ScanPage() {
   const [isAnalyzing, setIsAnalyzing] = useState(false)
   const [diagnosis, setDiagnosis] = useState(null)
   const [showCropSelect, setShowCropSelect] = useState(false)
+  const [analysisMode, setAnalysisMode] = useState(null) // 'ai' | 'offline'
   const fileInputRef = useRef(null)
   const cameraInputRef = useRef(null)
 
@@ -26,6 +28,7 @@ export default function ScanPage() {
     if (file) {
       setImage(file)
       setDiagnosis(null)
+      setAnalysisMode(null)
       const reader = new FileReader()
       reader.onload = (ev) => setImagePreview(ev.target.result)
       reader.readAsDataURL(file)
@@ -37,8 +40,22 @@ export default function ScanPage() {
     setIsAnalyzing(true)
     setDiagnosis(null)
 
+    // Try Gemini Vision first if API key is available
+    if (hasApiKey()) {
+      setAnalysisMode('ai')
+      try {
+        const result = await diagnoseCropWithAI(image, selectedCrop)
+        setDiagnosis(result)
+        setIsAnalyzing(false)
+        return
+      } catch (err) {
+        console.warn('Gemini Vision failed, falling back to offline:', err.message)
+      }
+    }
+
+    // Fallback to offline mock diagnosis
+    setAnalysisMode('offline')
     try {
-      // Simulate processing delay for realism
       await new Promise((resolve) => setTimeout(resolve, 1500 + Math.random() * 1000))
       const result = runDiagnosis(selectedCrop, image)
       setDiagnosis(result)
@@ -182,13 +199,19 @@ export default function ScanPage() {
               <div className="analyzing-bar">
                 <div className="analyzing-progress" />
               </div>
-              <p>Running Edge AI model...</p>
+              <p>{analysisMode === 'ai' ? 'Analyzing with Gemini Vision AI...' : 'Running Edge AI model...'}</p>
             </div>
           )}
 
           {/* Diagnosis Results */}
           {diagnosis && (
             <div className="diagnosis-results animate-fade-in">
+              {diagnosis.source === 'gemini' && (
+                <div className="ai-source-badge">
+                  <Sparkles size={14} />
+                  <span>Analyzed by Gemini AI</span>
+                </div>
+              )}
               <DiagnosisCard diagnosis={diagnosis} />
               <button className="btn-secondary scan-again-btn" onClick={handleReset}>
                 <RotateCcw size={18} />
@@ -199,10 +222,19 @@ export default function ScanPage() {
         </div>
       )}
 
-      {/* Offline Indicator */}
+      {/* Mode Indicator */}
       <div className="offline-badge animate-fade-in-delay-3">
-        <span className="offline-dot" />
-        <span>Works offline — Edge AI enabled</span>
+        {hasApiKey() ? (
+          <>
+            <Sparkles size={12} className="ai-dot" />
+            <span>Gemini Vision AI enabled</span>
+          </>
+        ) : (
+          <>
+            <WifiOff size={12} />
+            <span>Offline mode — Edge AI fallback</span>
+          </>
+        )}
       </div>
     </div>
   )
