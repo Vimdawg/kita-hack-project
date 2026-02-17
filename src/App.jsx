@@ -5,6 +5,7 @@ import ScanPage from './pages/ScanPage'
 import FarmPage from './pages/FarmPage'
 import SubsidyPage from './pages/SubsidyPage'
 import CommunityPage from './pages/CommunityPage'
+import GeminiPage from './pages/GeminiPage'
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
           <Route path="/farm" element={<FarmPage />} />
           <Route path="/subsidies" element={<SubsidyPage />} />
           <Route path="/community" element={<CommunityPage />} />
+          <Route path="/ai" element={<GeminiPage />} />
         </Routes>
       </main>
       <BottomNav />

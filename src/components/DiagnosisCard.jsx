@@ -1,4 +1,5 @@
-import { AlertTriangle, CheckCircle2, AlertCircle, ShieldAlert } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
+import { AlertTriangle, CheckCircle2, AlertCircle, ShieldAlert, Bot } from 'lucide-react'
 import './DiagnosisCard.css'
 
 const severityConfig = {
@@ -29,9 +30,15 @@ const severityConfig = {
 }
 
 export default function DiagnosisCard({ diagnosis }) {
+  const navigate = useNavigate()
   const config = severityConfig[diagnosis.severity] || severityConfig.none
   const Icon = config.icon
   const confidencePercent = Math.round(diagnosis.confidence * 100)
+
+  const handleAskAI = () => {
+    const prompt = `I just scanned my ${diagnosis.cropType || 'crop'} and the diagnosis is: ${diagnosis.disease} (${confidencePercent}% confidence, ${diagnosis.severity} severity). ${diagnosis.description} Can you give me more detailed advice on treatment, prevention, and what I should do next? Include locally available products in Malaysia.`
+    navigate('/ai', { state: { initialPrompt: prompt } })
+  }
 
   return (
     <div className={`diagnosis-card glass-card ${config.className}`} id="diagnosis-result">
@@ -76,6 +83,12 @@ export default function DiagnosisCard({ diagnosis }) {
           ))}
         </ul>
       </div>
+
+      {/* Ask AI for more advice */}
+      <button className="ask-ai-btn" onClick={handleAskAI}>
+        <Bot size={18} />
+        <span>Get detailed AI advice</span>
+      </button>
     </div>
   )
 }

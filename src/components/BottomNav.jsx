@@ -1,10 +1,11 @@
 import { useLocation, useNavigate } from 'react-router-dom'
-import { Home, ScanLine, Map, FileText, Users } from 'lucide-react'
+import { Home, ScanLine, Map, FileText, Users, Bot } from 'lucide-react'
 import './BottomNav.css'
 
 const navItems = [
   { path: '/', label: 'Home', icon: Home },
   { path: '/scan', label: 'Scan', icon: ScanLine },
+  { path: '/ai', label: 'AI', icon: Bot },
   { path: '/farm', label: 'My Farm', icon: Map },
   { path: '/subsidies', label: 'Subsidies', icon: FileText },
   { path: '/community', label: 'Community', icon: Users },
